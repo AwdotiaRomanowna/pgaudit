@@ -209,7 +209,7 @@ CREATE OR REPLACE FUNCTION audit.update()
 
     WHEN OTHERS
       THEN
-        RAISE NOTICE 'ERROR: Wystapil blad w funkcji audytujacej, audit.updat()';
+        RAISE NOTICE 'ERROR: Wystapil blad w funkcji audytujacej, audit.update()';
         RETURN NEW;
 
         RETURN NEW;
