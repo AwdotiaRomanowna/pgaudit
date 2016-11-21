@@ -18,21 +18,28 @@ At the time of first DML operation new table, that inherits from the main table,
 
 ## Installation
 * Just copy&paste the content of pgaudit.sql file to the pgAdmin SQL Editor or psql, or run:
+
     ```psql -f pgaudit.sql db_name```
 
 ## Configuration
 * Adjust the search path parameter of the functions, i.e. if you want to audit tables only in four schemas (public, audit, dictionaries, crm):
+
     ```ALTER FUNCTION audit.insert() SET search_path=public, audit, dictionaries, crm;```
 * Insert to audit.config all the tables you want to be audited:
+
     ```INSERT INTO audit.config(
             schema_name, table_name, enabled)
     VALUES ('public','my_table',TRUE);```
 * Change the first line in a pgaudit.sql file if you want another user to become an owner of audit schema and all the objects within it:
+
     ```SET ROLE TO another_audit_owner;```
 
 ## Caveats
 * every DDL change requires analogical change in history schema, i.e. command:
+
     ```ALTER TABLE public.distributors ADD COLUMN address varchar(30);```
+
     must be followed by:
+
     ```ALTER TABLE audit.public_distributors ADD COLUMN address varchar(30);```
 
