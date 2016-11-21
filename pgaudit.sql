@@ -31,7 +31,7 @@ CREATE OR REPLACE FUNCTION audit.config_insert()
   DECLARE
     l_query_create TEXT;
   BEGIN
-/* TWORZENIE TABELI HISTORYCZNEJ */
+/* CREATE MAIN AUDIT TABLE */
 
     l_query_create := 'CREATE TABLE audit.' || quote_ident(NEW.schema_name || '_' || NEW.table_name)
                       || ' (LIKE ' || NEW.schema_name || '.' || NEW.table_name ||
@@ -39,7 +39,7 @@ CREATE OR REPLACE FUNCTION audit.config_insert()
 
     EXECUTE l_query_create;
 
-/* ZAKLADANIE TRIGGEROW */
+/* CREATE TRIGGERS */
 
     l_query_create := 'CREATE TRIGGER trigger_' || NEW.table_name || '_audit_update
               BEFORE UPDATE
@@ -75,7 +75,7 @@ CREATE OR REPLACE FUNCTION audit.config_update()
     l_query_create TEXT;
   BEGIN
 
-/* WLACZANIE/WYLACZANIE TRIGGEROW */
+/* ENABLE/DISABLE TRIGGERS */
     IF OLD.enabled = TRUE AND NEW.enabled = FALSE
     THEN
 
@@ -119,7 +119,7 @@ CREATE OR REPLACE FUNCTION audit.config_delete()
     l_query_create TEXT;
   BEGIN
 
-/* USUWANIE TRIGGEROW */
+/* DELETE TRIGGERS */
 
     l_query_create := 'DROP TRIGGER trigger_' || OLD.table_name || '_audit_update
               ON ' || OLD.schema_name || '.' || OLD.table_name || ';
@@ -166,7 +166,7 @@ CREATE OR REPLACE FUNCTION audit.insert()
 
     WHEN OTHERS
       THEN
-        RAISE NOTICE 'ERROR: Wystapil blad w funkcji audytujacej, audit.insert()';
+        RAISE NOTICE 'ERROR: INTERNAL ERROR IN AUDIT FUNCTION audit.insert()';
         RETURN NEW;
 
   END;
@@ -184,7 +184,7 @@ CREATE OR REPLACE FUNCTION audit.update()
     l_table_name   TEXT := quote_ident(TG_TABLE_SCHEMA || '_' || TG_TABLE_NAME || l_table_suffix);
 
   BEGIN
-/* NIE ZAPISUJ UPDATOW TOZSAMYCH */
+/* ADD ROW ONLY IF SOMETHING CHANGED */
 
     IF md5(NEW :: TEXT) = md5(OLD :: TEXT)
     THEN
@@ -209,7 +209,7 @@ CREATE OR REPLACE FUNCTION audit.update()
 
     WHEN OTHERS
       THEN
-        RAISE NOTICE 'ERROR: Wystapil blad w funkcji audytujacej, audit.update()';
+        RAISE NOTICE 'ERROR: INTERNAL ERROR IN AUDIT FUNCTION audit.update()';
         RETURN NEW;
 
         RETURN NEW;
@@ -247,7 +247,7 @@ CREATE OR REPLACE FUNCTION audit.delete()
 
     WHEN OTHERS
       THEN
-        RAISE NOTICE 'ERROR: Wystapil blad w funkcji audytujacej, audit.delete()';
+        RAISE NOTICE 'ERROR: INTERNAL ERROR IN AUDIT FUNCTION audit.delete()';
         RETURN OLD;
 
         RETURN OLD;
